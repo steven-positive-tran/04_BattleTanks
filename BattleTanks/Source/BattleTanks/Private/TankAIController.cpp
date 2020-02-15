@@ -18,6 +18,8 @@ void ATankAIController::Tick(float DeltaTime)
 
 	if(PlayerTank)
 	{ 
+		MoveToActor(PlayerTank, AccpetanceRadius); //TO DO CHECK IF RADIUS IS IN CENTIMETERS
+
 		ControlledTank->AimAt(PlayerTank->GetActorLocation());
 
 		//UE_LOG(LogTemp, Warning, TEXT("%s"), *PlayerTank->GetActorLocation().ToString())

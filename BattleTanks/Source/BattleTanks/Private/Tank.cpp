@@ -3,6 +3,7 @@
 
 #include "GameFramework/Actor.h" 
 #include "TankBarrel.h"
+#include "TankMovementComponent.h"
 #include "Projectile.h"
 #include "Components/StaticMeshComponent.h" 
 #include "TankAimingComponent.h"
@@ -17,7 +18,7 @@ ATank::ATank()
 
 	//No need to protect points as added to construction
 
-	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName ("AimComponent"));
+	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimComponent"));
 
 
 }

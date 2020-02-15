@@ -21,5 +21,8 @@ private:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	//UPROPERTY(EditDefaultsOnly)
+	float AccpetanceRadius = 3000;
 	
 };
