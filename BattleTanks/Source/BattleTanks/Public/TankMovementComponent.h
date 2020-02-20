@@ -28,10 +28,9 @@ public:
 	UFUNCTION(BluePrintCallable, Category = Setup)
 	void Initialise(UTankTracks* LeftTrackToSet, UTankTracks* RightTrackToSet);
 
-	//TODO best protection
+private:
 	virtual void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;
 
-private:
 	UTankTracks* LeftTrack = nullptr;
 	UTankTracks* RightTrack = nullptr;
 };

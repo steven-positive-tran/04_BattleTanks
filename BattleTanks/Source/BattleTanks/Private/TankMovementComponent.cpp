@@ -12,7 +12,7 @@
 
 void UTankMovementComponent::IntendMoveForward(float Throw)
 {
-	if (!LeftTrack || !RightTrack)
+	if (!ensure(LeftTrack && RightTrack))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Tracks NotSet"));
 		return;
@@ -24,7 +24,7 @@ void UTankMovementComponent::IntendMoveForward(float Throw)
 
 void UTankMovementComponent::IntendTurnRight(float Throw)
 {
-	if (!LeftTrack || !RightTrack)
+	if (!ensure(LeftTrack && RightTrack))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Tracks NotSet"));
 		return;
@@ -37,8 +37,6 @@ void UTankMovementComponent::Initialise(UTankTracks* LeftTrackToSet, UTankTracks
 {
 	LeftTrack = LeftTrackToSet;
 	RightTrack = RightTrackToSet;
-	
-	//TODO PREVENT DOUBLE SPEED DUE TO DOUBLE CONTROL
 }
 
 void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)

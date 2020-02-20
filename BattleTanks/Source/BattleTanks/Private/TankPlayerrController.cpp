@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Tank.h"
+#include "TankAimingComponent.h"
 #include "TankPlayerrController.h"
 
 
@@ -9,24 +9,12 @@ void ATankPlayerrController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto ControlledTank = GetControlledTank();
-
-	if (!ControlledTank)
+	auto AimingComponenet = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(AimingComponenet))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController not possessing a tank"));
+		return;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Controller: %s"), *(ControlledTank->GetName()) );
-	}
-
-
-	//UE_LOG(LogTemp, Warning, TEXT("PlayerController Begin PLay"));
-}
-
-ATank* ATankPlayerrController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
+	FoundAimingComponent(AimingComponenet);
 }
 
 
@@ -49,16 +37,22 @@ bool ATankPlayerrController::GetLookDirection(FVector2D ScreenLocation, FVector&
 
 void ATankPlayerrController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank())
+	if (!GetPawn())
+	{
+		return;
+	}
+
+	auto AimingComponenet = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(AimingComponenet))
 	{
 		return; 
 	}
-
-	FVector HitLocation;
-
-	if (GetSightRayHitLocation(HitLocation)) 
+	
+	FVector HitLocation; //Out Parameter
+	bool bGotHitLocation = GetSightRayHitLocation(HitLocation);
+	if (bGotHitLocation)
 	{
-		GetControlledTank()->AimAt(HitLocation);
+		AimingComponenet->AimAt(HitLocation);
 	}
 
 
@@ -69,29 +63,18 @@ bool ATankPlayerrController::GetSightRayHitLocation(FVector& HitLocation) const
 
 	//Find the crosshair position
 	int32 ViewportSizeX, ViewportSizeY;
-
 	GetViewportSize(ViewportSizeX, ViewportSizeY);
-
 	auto ScreenLocation = FVector2D(ViewportSizeX * CrosshairXPosition, ViewportSizeY * CrosshairYPosition);
+
 
 	FVector LookDirection;
 	if (GetLookDirection(ScreenLocation, LookDirection))
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("LookDirection: %s"), *(LookDirection.ToString()));
-
-		GetLookVectorHitLocation(LookDirection, HitLocation);
+		return GetLookVectorHitLocation(LookDirection, HitLocation);
 
 	}
 
-
-	//UE_LOG(LogTemp, Warning, TEXT("ScreenLocation: %s"), *(ScreenLocation.ToString()));
-
-
-	//De-project the screen position of the cursor to a world direction
-
-	//Line-trace along that look direction and see what we hit (up to a maximum range)
-
-	return true;
+	return false;
 }
 
 bool ATankPlayerrController::GetLookVectorHitLocation(FVector LookDirection, FVector & HitLocation) const

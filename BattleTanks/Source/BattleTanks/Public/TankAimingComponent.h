@@ -8,9 +8,17 @@
 #include "TankAimingComponent.generated.h"
 
 
+//Enums
+UENUM()
+enum class EFiringStatus : uint8
+{
+	Locked, Aiming, Reloading, OutOfAmmo
+};
+
 // Forward Declaration
 class UTankBarrel; 
 class UTankTurret;
+class AProjectile;
 // Hold parameters for barrel's properties and Elevate method
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -19,26 +27,53 @@ class BATTLETANKS_API UTankAimingComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
-	UTankAimingComponent();
+	UFUNCTION(BluePrintCallable, Category = Setup)
+	void Initialize(UTankBarrel * Barrel, UTankTurret * Turret);
+	void AimAt(FVector HitLocation);
 
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	UFUNCTION(BluePrintCallable)
+	void Fire();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	EFiringStatus GetFiringStatus() const;
 
-	void AimAt(FVector HitLocation, float LaunchSpeed);
+	UFUNCTION(BluePrintCallable)
+	int GetRoundsLeft() const;
 
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
-	void SetTurretReference(UTankTurret* TurretToSet);
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Category = State)
+	EFiringStatus FiringState = EFiringStatus::Reloading;
 
 private:
+
+	UTankAimingComponent();
+
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	bool IsBarrelMoving();
+	void MoveBarrelTowards(FVector AimDirection);
+
+
 	UTankBarrel * Barrel = nullptr;
 	UTankTurret * Turret = nullptr; 
 
-	void MoveBarrelTowards(FVector AimDirection);
-	void MoveTurretDirection(FRotator Direction);
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float LaunchSpeed = 100000;
 
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTimeInSeconds = 3.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	TSubclassOf<AProjectile> Projectile_BP;
+
+
+
+	float LastFireTime = 0;
+	FVector AimDirection;
+
+
+	int RoundsLeft = 3;
 		
 };

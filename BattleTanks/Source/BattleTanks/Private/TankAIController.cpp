@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "Tank.h"
+#include "TankAimingComponent.h"
 #include "TankAIController.h"
 
 void ATankAIController::BeginPlay()
@@ -13,16 +12,20 @@ void ATankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	auto PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	auto ControlledTank = Cast<ATank>(GetPawn());
+	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
+	auto ControlledTank = GetPawn();
 
-	if(PlayerTank)
+	if(ensure(PlayerTank && ControlledTank))
 	{ 
 		MoveToActor(PlayerTank, AccpetanceRadius); //TO DO CHECK IF RADIUS IS IN CENTIMETERS
+ 
+		ControlledTank->FindComponentByClass<UTankAimingComponent>()->AimAt(PlayerTank->GetActorLocation());
 
-		ControlledTank->AimAt(PlayerTank->GetActorLocation());
 
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), *PlayerTank->GetActorLocation().ToString())
-		//ControlledTank->Fire();
+		//if aimed or locked 
+		if (ControlledTank->FindComponentByClass<UTankAimingComponent>()->GetFiringStatus() == EFiringStatus::Locked)
+		{
+			ControlledTank->FindComponentByClass<UTankAimingComponent>()->Fire();
+		}
 	}
 }
