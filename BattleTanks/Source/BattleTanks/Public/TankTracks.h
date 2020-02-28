@@ -9,6 +9,8 @@
 /**
  * 
  */
+class ASprungWheel;
+
 UCLASS(meta = (BlueprintSpawnableComponent))
 class BATTLETANKS_API UTankTracks : public UStaticMeshComponent
 {
@@ -17,23 +19,16 @@ class BATTLETANKS_API UTankTracks : public UStaticMeshComponent
 private:
 	UTankTracks();
 
-	void ApplySideWaysForce();
-	virtual void BeginPlay() override;
+	TArray<ASprungWheel* > GetWheels() const;
 
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
-
+	void DriveTrack(float CurrentThrottle);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = Input)
 	void SetThrottle(float Throttle);
 
-	void DriveTrack();
-
 	//Max Force Per Track In Newtons
 	UPROPERTY(EditDefaultsOnly)
 	float TrackMaxDrivingForce = 400000; //assume 40 Ton Tank, and 1g acceleration
-
-	float CurrentThrottle = 0;
 	
 };

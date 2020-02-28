@@ -37,7 +37,7 @@ public:
 	EFiringStatus GetFiringStatus() const;
 
 	UFUNCTION(BluePrintCallable)
-	int GetRoundsLeft() const;
+	int32 GetRoundsLeft() const;
 
 
 protected:
@@ -73,7 +73,7 @@ private:
 	float LastFireTime = 0;
 	FVector AimDirection;
 
-
-	int RoundsLeft = 3;
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	int32 RoundsLeft = 3;
 		
 };
